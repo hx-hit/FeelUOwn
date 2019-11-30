@@ -10,51 +10,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
-from feeluown.widgets.table_toolbar import SongsTableToolbar
+from feeluown.widgets.desc_container import DescriptionContainer
 
 
-class DescriptionContainer(QScrollArea):
-
-    space_pressed = pyqtSignal()
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.label = QLabel(self)
-        self.label.setWordWrap(True)
-        self.label.setTextFormat(Qt.RichText)
-        self.label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        self.setWidget(self.label)
-        self.setToolTip('按空格可以窗口全屏')
-
-        self._setup_ui()
-
-    def _setup_ui(self):
-        self.label.setAlignment(Qt.AlignTop)
-        self.setWidgetResizable(True)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._layout = QVBoxLayout(self)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.setSpacing(0)
-
-    def keyPressEvent(self, event):
-        key_code = event.key()
-        if key_code == Qt.Key_J:
-            value = self.verticalScrollBar().value()
-            self.verticalScrollBar().setValue(value + 20)
-        elif key_code == Qt.Key_K:
-            value = self.verticalScrollBar().value()
-            self.verticalScrollBar().setValue(value - 20)
-        elif key_code == Qt.Key_Space:
-            self.space_pressed.emit()
-            event.accept()
-        else:
-            super().keyPressEvent(event)
-
-
-class TableMetaWidget(QWidget):
+class MetaWidget(QWidget):
 
     toggle_full_window_needed = pyqtSignal([bool])
 
@@ -74,14 +33,14 @@ class TableMetaWidget(QWidget):
             if self.set_cb is not None:
                 self.set_cb(instance)
 
-    def __init__(self, parent=None):
+    def __init__(self, toolbar, parent=None):
         super().__init__(parent=parent)
 
         self.title_label = QLabel(self)
         self.cover_label = QLabel(self)
         self.meta_label = QLabel(self)
         self.desc_container = DescriptionContainer(parent=self)
-        self.toolbar = SongsTableToolbar(parent=self)
+        self.toolbar = toolbar
 
         self.title_label.setTextFormat(Qt.RichText)
         self.meta_label.setTextFormat(Qt.RichText)
