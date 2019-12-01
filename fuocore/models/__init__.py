@@ -373,6 +373,7 @@ class ArtistModel(BaseModel):
     class Meta:
         model_type = ModelType.artist.value
         fields = ['name', 'cover', 'songs', 'desc', 'albums']
+        fields = ['name']
         allow_create_songs_g = False
         allow_create_albums_g = False
 
@@ -443,6 +444,7 @@ class AlbumModel(BaseModel):
         # 从意思上来区分的话：artist 是专辑制作人，singer 是演唱者
         # 像虾米音乐中，它即提供了专辑制作人信息，也提供了 singer 信息
         fields = ['name', 'cover', 'songs', 'artists', 'desc', 'type']
+        fields_display = ['name', 'artists_name']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

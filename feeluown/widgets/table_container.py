@@ -241,7 +241,8 @@ class CollectionDelegate(Delegate):
         self.meta_widget.title = collection.name
         self.meta_widget.updated_at = collection.updated_at
         self.meta_widget.created_at = collection.created_at
-        self.show_songs(collection.models)
+        self.show_songs([model for model in collection.models
+                         if model.meta.model_type == ModelType.song])
         self.songs_table.song_deleted.connect(collection.remove)
 
         self.meta_widget.toolbar.pure_songs_mode()

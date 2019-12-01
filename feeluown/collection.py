@@ -2,7 +2,6 @@ import os
 import logging
 import random
 
-from fuocore.models import ModelType
 from fuocore.models.uri import resolve, reverse, ResolverNotFound, ResolveFailed
 from feeluown.consts import COLLECTIONS_DIR
 
@@ -39,8 +38,7 @@ class Collection:
                 except ResolveFailed:
                     logger.warn('invalid line: %s', line)
                     model = None
-                if model is not None and \
-                   model.meta.model_type == ModelType.song:
+                if model is not None:
                     self.models.append(model)
 
     def add(self, song):

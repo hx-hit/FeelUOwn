@@ -3,9 +3,11 @@ Table of contents view for one collection
 """
 
 from PyQt5.QtCore import (Qt, QAbstractListModel, QModelIndex, QSize,
-                          QRectF, QRect, QPoint, )
-from PyQt5.QtGui import (QPainter, QPalette, QPen, QTextOption)
+                          QRect, QPoint, )
+from PyQt5.QtGui import (QPainter, QPalette, QPen)
 from PyQt5.QtWidgets import QListView, QStyledItemDelegate, QStyle
+
+from fuocore.models import ModelType
 
 
 def draw_album_icon(painter, x, y, h):
@@ -34,10 +36,12 @@ def draw_album_icon(painter, x, y, h):
 
 
 class CollectionTOCModel(QAbstractListModel):
-    def __init__(self, parent=None):
+    def __init__(self, coll, parent=None):
         super().__init__(parent)
 
-        self.items = list(['理性与感性', '单身日志（Live）', '叶慧美', '晴日共剪窗'])
+        self.coll = coll
+        self.items = [model for model in self.coll.models
+                      if model.meta.model_type == ModelType.album]
 
     def rowCount(self, _=QModelIndex()):
         return len(self.items)
@@ -45,7 +49,7 @@ class CollectionTOCModel(QAbstractListModel):
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
         if role == Qt.DisplayRole:
-            return self.items[row]
+            return self.items[row].name_display
         return None
 
 
@@ -78,7 +82,8 @@ class CollectionTOCDelegate(QStyledItemDelegate):
         text = index.data(Qt.DisplayRole)
         text_margin_left = h // 4
         topleft = QPoint(x + option.rect.height() + text_margin_left, y)
-        painter.drawText(QRect(topleft, option.rect.bottomRight()), Qt.AlignVCenter, text)
+        painter.drawText(QRect(topleft, option.rect.bottomRight()),
+                         Qt.AlignVCenter, text)
         painter.restore()
 
     def sizeHint(self, option, index):
@@ -94,14 +99,10 @@ class CollectionTOCView(QListView):
 
         delegate = CollectionTOCDelegate(self)
         self.setItemDelegate(delegate)
-        if self._app is not None:
-            model = CollectionTOCModel(self)
-            self.setModel(model)
 
     def sizeHint(self):
         size = super().sizeHint()
         return QSize(50, size.height())
-
 
 
 if __name__ == '__main__':

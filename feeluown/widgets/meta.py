@@ -1,14 +1,7 @@
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import (
-    QFrame,
-    QLabel,
-    QWidget,
-    QScrollArea,
-    QHBoxLayout,
-    QVBoxLayout,
-)
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout
 
 from feeluown.widgets.desc_container import DescriptionContainer
 
