@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QFrame, QSizePolicy, QLabel, QVBoxLayout,\
     QHBoxLayout
 
@@ -22,11 +22,18 @@ class CollectionBody(QFrame):
         self._app = app
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.meta_widget = MetaWidget(self)
+        self.meta_widget = MetaWidget(CollectionToolbar(), self)
 
         self._setup_ui()
+
+    def sizeHint(self):
+        size = super().sizeHint()
+        return QSize(300, size.height())
 
     def _setup_ui(self):
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
+
+        self._layout.addWidget(self.meta_widget)
+        self._layout.addStretch(0)

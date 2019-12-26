@@ -167,3 +167,8 @@ class MetaWidget(QWidget):
             self.toggle_full_window_needed.emit(True)
             self.setMaximumHeight(4000)
         self._is_fullwindow = not self._is_fullwindow
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        width = e.size().width()
+        self.cover_label.setMinimumWidth(width//4)

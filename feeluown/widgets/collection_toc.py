@@ -3,9 +3,9 @@ Table of contents view for one collection
 """
 
 from PyQt5.QtCore import (Qt, QAbstractListModel, QModelIndex, QSize,
-                          QRect, QPoint, )
+                          QRect, QPoint, pyqtSignal)
 from PyQt5.QtGui import (QPainter, QPalette, QPen)
-from PyQt5.QtWidgets import QListView, QStyledItemDelegate, QStyle
+from PyQt5.QtWidgets import QListView, QStyledItemDelegate, QStyle, QSizePolicy
 
 from fuocore.models import ModelType
 
@@ -50,6 +50,8 @@ class CollectionTOCModel(QAbstractListModel):
         row = index.row()
         if role == Qt.DisplayRole:
             return self.items[row].name_display
+        elif role == Qt.UserRole:
+            return self.items[row]
         return None
 
 
@@ -93,16 +95,24 @@ class CollectionTOCDelegate(QStyledItemDelegate):
 
 
 class CollectionTOCView(QListView):
+    show_album_needed = pyqtSignal([object])
+
     def __init__(self, app, parent=None):
         super().__init__(parent=parent)
         self._app = app
 
         delegate = CollectionTOCDelegate(self)
         self.setItemDelegate(delegate)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+
+        self.activated.connect(self._on_activated)
+
+    def _on_activated(self, index):
+        self.show_album_needed.emit(index.data(Qt.UserRole))
 
     def sizeHint(self):
         size = super().sizeHint()
-        return QSize(50, size.height())
+        return QSize(150, size.height())
 
 
 if __name__ == '__main__':
