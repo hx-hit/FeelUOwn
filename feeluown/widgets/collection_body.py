@@ -1,19 +1,9 @@
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QFrame, QSizePolicy, QLabel, QVBoxLayout,\
-    QHBoxLayout
-
-from feeluown.widgets.meta import MetaWidget
+from PyQt5.QtCore import QSize
+from PyQt5.QtWidgets import QFrame, QSizePolicy, QVBoxLayout
 
 
-class CollectionToolbar(QFrame):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-
-    def songs_mode(self):
-        pass
-
-    def artists_mode(self):
-        pass
+from feeluown.widgets.meta import CollMetaWidget
+from feeluown.widgets.song_list import SongListView
 
 
 class CollectionBody(QFrame):
@@ -22,8 +12,10 @@ class CollectionBody(QFrame):
         self._app = app
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.meta_widget = MetaWidget(CollectionToolbar(), self)
+        self.meta_widget = CollMetaWidget(self)
+        self.song_list_view = SongListView(self)
 
+        self._layout = QVBoxLayout(self)
         self._setup_ui()
 
     def sizeHint(self):
@@ -31,9 +23,8 @@ class CollectionBody(QFrame):
         return QSize(300, size.height())
 
     def _setup_ui(self):
-        self._layout = QVBoxLayout(self)
+
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.setSpacing(0)
-
         self._layout.addWidget(self.meta_widget)
-        self._layout.addStretch(0)
+        self._layout.addWidget(self.song_list_view)

@@ -1,30 +1,57 @@
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QSpacerItem
 
 from feeluown.widgets.desc_container import DescriptionContainer
 
 
+class getset_property:
+    def __init__(self, name):
+        self.name = name
+        self.name_real = '_' + name
+
+    def __get__(self, instance, owner):
+        if hasattr(instance, self.name_real):
+            return getattr(instance, self.name_real)
+        return None
+
+    def __set__(self, instance, value):
+        setattr(instance, self.name_real, value)
+        instance.on_property_updated(self.name)
+
+
 class MetaWidget(QWidget):
 
+    def clear(self):
+        self.title = None
+        self.subtitle = None
+        self.desc = None
+        self.cover = None
+        self.created_at = None
+        self.updated_at = None
+        self.creator = None
+        self.is_artist = False
+        self.songs_count = None
+
+    def on_property_updated(self, name):
+        pass
+
+    # TODO: use metaclass
+    title = getset_property('title')
+    subtitle = getset_property('subtitle')
+    desc = getset_property('desc')
+    cover = getset_property('cover')
+    created_at = getset_property('created_at')
+    updated_at = getset_property('updated_at')
+    songs_count = getset_property('songs_count')
+    creator = getset_property('creator')
+    is_artist = getset_property('is_artist')
+
+
+class TableMetaWidget(MetaWidget):
+
     toggle_full_window_needed = pyqtSignal([bool])
-
-    class getset_property:
-        def __init__(self, name, set_cb):
-            self.name = name
-            self.name_real = '_' + name
-            self.set_cb = set_cb
-
-        def __get__(self, instance, owner):
-            if hasattr(instance, self.name_real):
-                return getattr(instance, self.name_real)
-            return None
-
-        def __set__(self, instance, value):
-            setattr(instance, self.name_real, value)
-            if self.set_cb is not None:
-                self.set_cb(instance)
 
     def __init__(self, toolbar, parent=None):
         super().__init__(parent=parent)
@@ -73,18 +100,17 @@ class MetaWidget(QWidget):
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
 
-    def _refresh(self):
-        self._refresh_title()
-        self._refresh_meta_label()
-        self._refresh_desc()
-        self._refresh_cover()
-
-    def _refresh_title(self):
-        if self.title:
-            self.title_label.show()
-            self.title_label.setText('<h2>{}</h2>'.format(self.title))
-        else:
-            self.title_label.hide()
+    def on_property_updated(self, name):
+        if name in ('created_at', 'updated_at', 'songs_count', 'creator'):
+            self._refresh_meta_label()
+        elif name in ('title', 'subtitle'):
+            self._refresh_title()
+        elif name == 'is_artist':
+            self._refresh_toolbar()
+        elif name == 'desc':
+            self._refresh_desc()
+        elif name == 'cover':
+            self._refresh_cover()
 
     def _refresh_meta_label(self):
         creator = self.creator
@@ -131,32 +157,24 @@ class MetaWidget(QWidget):
         else:
             self.toolbar.songs_mode()
 
-    def clear(self):
-        self.title = None
-        self.subtitle = None
-        self.desc = None
-        self.cover = None
-        self.created_at = None
-        self.updated_at = None
-        self.creator = None
-        self.is_artist = False
-        self.songs_count = None
+    def _refresh_title(self):
+        if self.title:
+            self.title_label.show()
+            self.title_label.setText('<h2>{}</h2>'.format(self.title))
+        else:
+            self.title_label.hide()
+
+    def _refresh(self):
+        self._refresh_title()
+        self._refresh_meta_label()
+        self._refresh_desc()
+        self._refresh_cover()
 
     def set_cover_pixmap(self, pixmap):
         self.cover_label.show()
         self.cover_label.setPixmap(
             pixmap.scaledToWidth(self.cover_label.width(),
                                  mode=Qt.SmoothTransformation))
-
-    title = getset_property('title', _refresh_title)
-    subtitle = getset_property('subtitle', _refresh_title)
-    desc = getset_property('desc', _refresh_desc)
-    cover = getset_property('cover', _refresh_cover)
-    created_at = getset_property('created_at', _refresh_meta_label)
-    updated_at = getset_property('updated_at', _refresh_meta_label)
-    songs_count = getset_property('songs_count', _refresh_meta_label)
-    creator = getset_property('creator', _refresh_meta_label)
-    is_artist = getset_property('is_artist', _refresh_toolbar)
 
     def toggle_full_window(self):
         if self._is_fullwindow:
@@ -168,7 +186,82 @@ class MetaWidget(QWidget):
             self.setMaximumHeight(4000)
         self._is_fullwindow = not self._is_fullwindow
 
-    def resizeEvent(self, e):
-        super().resizeEvent(e)
-        width = e.size().width()
-        self.cover_label.setMinimumWidth(width//4)
+
+class CollectionToolbar(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+    def songs_mode(self):
+        pass
+
+    def artists_mode(self):
+        pass
+
+
+class CollMetaWidget(MetaWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+        self.toolbar = CollectionToolbar(self)
+
+        self._title_label = QLabel(self)
+        self._cover_label = QLabel(self)
+        self._meta_label = QLabel(self)
+
+        self._title_label.setTextFormat(Qt.RichText)
+        self._meta_label.setTextFormat(Qt.RichText)
+        self._top_mid_spacer = QSpacerItem(25, 0)
+
+        self._layout = QVBoxLayout(self)
+        self._top_layout = QHBoxLayout()
+        self._top_right_layout = QVBoxLayout()
+        self._bottom_layout = QHBoxLayout()
+
+        self._setup_ui()
+
+    def _setup_ui(self):
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setSpacing(0)
+
+        self._cover_label.setFixedWidth(150)
+        self.setMaximumHeight(200)
+
+        # top right layout
+        self._top_right_layout.addStretch(0)
+        self._top_right_layout.addWidget(self._title_label)
+        self._top_right_layout.addSpacing(20)
+        self._top_right_layout.addWidget(self._meta_label)
+        self._top_right_layout.addStretch(0)
+
+        self._top_layout.setContentsMargins(20, 20, 20, 20)
+        self._top_layout.addWidget(self._cover_label)
+        self._top_layout.addSpacerItem(self._top_mid_spacer)
+        self._top_layout.addLayout(self._top_right_layout)
+
+        self._layout.addLayout(self._top_layout)
+        self._layout.addLayout(self._bottom_layout)
+
+    def on_property_updated(self, name):
+        if name in ('title', 'subtitle'):
+            self._title_label.setText('<h2>{}</h2>'.format(self.title))
+        elif name in ('created_at', 'updated_at', 'songs_count', 'creator'):
+            parts = []
+            if self.creator is not None:
+                part = self.creator
+                parts.append(part)
+            if self.songs_count is not None:
+                part = '{} 首歌曲'.format(self.songs_count)
+                parts.append(part)
+            s = ' • '.join(parts)
+            self._meta_label.setText(s)
+
+    def set_cover_pixmap(self, pixmap):
+        self._cover_label.show()
+        self._cover_label.setPixmap(
+            pixmap.scaledToWidth(self._cover_label.width(),
+                                 mode=Qt.SmoothTransformation))
+
+    # def resizeEvent(self, e):
+    #     super().resizeEvent(e)
+    #     width = e.size().width()
+    #     self._cover_label.setMinimumWidth(width//3)

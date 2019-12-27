@@ -12,7 +12,7 @@ from fuocore.models import GeneratorProxy, reverse
 from feeluown.helpers import async_run
 from feeluown.widgets.album import AlbumListModel, AlbumListView, AlbumFilterProxyModel
 from feeluown.widgets.songs_table import SongsTableModel, SongsTableView
-from feeluown.widgets.meta import MetaWidget
+from feeluown.widgets.meta import TableMetaWidget
 from feeluown.widgets.table_toolbar import SongsTableToolbar
 
 logger = logging.getLogger(__name__)
@@ -267,7 +267,7 @@ class TableContainer(QFrame):
         self._app = app
 
         self.toolbar = SongsTableToolbar()
-        self.meta_widget = MetaWidget(self.toolbar, parent=self)
+        self.meta_widget = TableMetaWidget(self.toolbar, parent=self)
         self.songs_table = SongsTableView(parent=self)
         self.albums_table = AlbumListView(parent=self)
 

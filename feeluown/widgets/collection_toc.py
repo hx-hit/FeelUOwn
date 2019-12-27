@@ -105,9 +105,9 @@ class CollectionTOCView(QListView):
         self.setItemDelegate(delegate)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
-        self.activated.connect(self._on_activated)
+        self.clicked.connect(self._on_clicked)
 
-    def _on_activated(self, index):
+    def _on_clicked(self, index):
         self.show_album_needed.emit(index.data(Qt.UserRole))
 
     def sizeHint(self):

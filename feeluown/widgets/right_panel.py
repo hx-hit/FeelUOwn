@@ -14,6 +14,8 @@ class RightPanel(QFrame):
         self._layout = QHBoxLayout(self)
         self.table_container = TableContainer(self._app, self)
         self.collection_container = CollectionContainer(self._app, self)
+        self.table_container.hide()
+        self.collection_container.hide()
         self._layout.addWidget(self.table_container)
         self._layout.addWidget(self.collection_container)
         self._layout.setContentsMargins(0, 0, 0, 0)

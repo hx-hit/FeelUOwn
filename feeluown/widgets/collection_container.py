@@ -2,12 +2,14 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QSplitter
 from PyQt5.QtGui import QPixmap, QImage
 
 from fuocore import aio
+from fuocore.reader import RandomSequentialReader
 from fuocore.media import Media, MediaType
 from fuocore.models.uri import reverse
 from feeluown.helpers import async_run
 
 from .collection_toc import CollectionTOCView, CollectionTOCModel
 from .collection_body import CollectionBody
+from .song_list import SongListModel
 
 
 class CollectionContainer(QFrame):
@@ -21,6 +23,8 @@ class CollectionContainer(QFrame):
 
         self.collection_toc.show_album_needed.connect(
             lambda album: aio.create_task(self.show_album(album)))
+        self.collection_body.song_list_view.play_song_needed.connect(
+            self._app.player.play_song)
 
         self._layout = QHBoxLayout(self)
 
@@ -48,8 +52,15 @@ class CollectionContainer(QFrame):
     async def show_album(self, album):
         meta_widget = self.collection_body.meta_widget
         meta_widget.title = album.name_display
+        meta_widget.creator = album.artists_name_display
+        songs = await async_run(lambda: album.songs)
+        meta_widget.songs_count = len(songs)
+        reader = RandomSequentialReader.from_list(songs)
+        model = SongListModel(reader)
+        self.collection_body.song_list_view.setModel(model)
         meta_widget.desc = await async_run(lambda: album.desc)
         meta_widget.title = await async_run(lambda: album.name)
+        meta_widget.creator = await async_run(lambda: album.artists_name)
         cover = await async_run(lambda: album.cover)
         if cover:
             aio.create_task(self.show_cover(cover, reverse(album, '/cover')))
