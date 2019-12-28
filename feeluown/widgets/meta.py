@@ -252,8 +252,24 @@ class CollMetaWidget(MetaWidget):
             if self.songs_count is not None:
                 part = '{} 首歌曲'.format(self.songs_count)
                 parts.append(part)
+            if self.created_at is not None:
+                created_at = datetime.fromtimestamp(self.created_at)
+                part = '🕛 创建于 <code style="font-size: small">{}</code>'\
+                    .format(created_at.strftime('%Y-%m-%d'))
+                parts.append(part)
+            if self.updated_at:
+                updated_at = datetime.fromtimestamp(self.updated_at)
+                part = '🕒 更新于 <code style="font-size: small">{}</code>'\
+                    .format(updated_at.strftime('%Y-%m-%d'))
+                parts.append(part)
+
             s = ' • '.join(parts)
             self._meta_label.setText(s)
+        elif name == 'cover':
+            if self.cover is None:
+                self._cover_label.hide()
+            else:
+                self._cover_label.show()
 
     def set_cover_pixmap(self, pixmap):
         self._cover_label.show()

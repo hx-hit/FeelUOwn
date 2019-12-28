@@ -23,6 +23,8 @@ class CollectionContainer(QFrame):
 
         self.collection_toc.show_album_needed.connect(
             lambda album: aio.create_task(self.show_album(album)))
+        self.collection_toc.play_song_needed.connect(
+            self._app.player.play_song)
         self.collection_body.song_list_view.play_song_needed.connect(
             self._app.player.play_song)
 
@@ -42,21 +44,23 @@ class CollectionContainer(QFrame):
         model = CollectionTOCModel(coll)
         self.collection_toc.setModel(model)
 
+        self.collection_body.song_list_view.hide()
         meta_widget = self.collection_body.meta_widget
-        meta_widget.title = coll.name
-
+        meta_widget.clear()
         meta_widget.title = coll.name
         meta_widget.updated_at = coll.updated_at
         meta_widget.created_at = coll.created_at
 
     async def show_album(self, album):
         meta_widget = self.collection_body.meta_widget
+        meta_widget.clear()
         meta_widget.title = album.name_display
         meta_widget.creator = album.artists_name_display
         songs = await async_run(lambda: album.songs)
         meta_widget.songs_count = len(songs)
         reader = RandomSequentialReader.from_list(songs)
         model = SongListModel(reader)
+        self.collection_body.song_list_view.show()
         self.collection_body.song_list_view.setModel(model)
         meta_widget.desc = await async_run(lambda: album.desc)
         meta_widget.title = await async_run(lambda: album.name)

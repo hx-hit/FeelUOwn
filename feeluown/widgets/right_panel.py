@@ -1,5 +1,8 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout
+
+from fuocore.models import ModelType
+
 from feeluown.widgets.table_container import TableContainer
 from feeluown.widgets.collection_container import CollectionContainer
 
@@ -32,6 +35,17 @@ class RightPanel(QFrame):
         aio.create_task(self.table_container.show_model(model))
 
     def show_collection(self, coll):
-        self.table_container.hide()
-        self.collection_container.show()
-        self.collection_container.show_collection(coll)
+        pure_songs = True
+        for model in coll.models:
+            if model.meta.model_type != ModelType.song:
+                pure_songs = False
+                break
+
+        if pure_songs:
+            self.collection_container.hide()
+            self.table_container.show()
+            self.table_container.show_collection(coll)
+        else:
+            self.table_container.hide()
+            self.collection_container.show()
+            self.collection_container.show_collection(coll)
