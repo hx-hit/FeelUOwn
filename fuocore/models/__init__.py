@@ -373,7 +373,7 @@ class ArtistModel(BaseModel):
     class Meta:
         model_type = ModelType.artist.value
         fields = ['name', 'cover', 'songs', 'desc', 'albums']
-        fields = ['name']
+        fields_display = ['name']
         allow_create_songs_g = False
         allow_create_albums_g = False
 

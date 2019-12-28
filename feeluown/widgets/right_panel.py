@@ -34,6 +34,10 @@ class RightPanel(QFrame):
         # TODO: use PreemptiveTask
         aio.create_task(self.table_container.show_model(model))
 
+    def show_songs(self, songs):
+        self.collection_container.hide()
+        self.songs_table_container.show_songs(songs)
+
     def show_collection(self, coll):
         pure_songs = True
         for model in coll.models:

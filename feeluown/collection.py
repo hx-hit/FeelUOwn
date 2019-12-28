@@ -144,7 +144,7 @@ class CollectionManager:
                 lines = [
                     'fuo://xiami/albums/1194678626     # 脱掉高跟鞋 世界巡回演唱会',
                     'fuo://xiami/albums/32623          # 理性与感性 作品音乐会',
-                    'fuo://qqmusic/albums/25467        # Hybrid Theory - Linkin Park',
+                    'fuo://netease/albums/18878        # OK - 张震岳',
                 ]
                 f.write('\n'.join(lines))
         return albums_fpath

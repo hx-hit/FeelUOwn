@@ -3,10 +3,10 @@ Table of contents view for one collection
 """
 
 from PyQt5.QtCore import (Qt, QAbstractListModel, QModelIndex, QSize,
-                          QRect, QPoint, pyqtSignal)
-from PyQt5.QtGui import (QPainter, QPalette, QPen)
+                          QRect, QPoint, pyqtSignal, QRectF)
+from PyQt5.QtGui import (QPainter, QPalette, QPen, QTextDocument)
 from PyQt5.QtWidgets import (QListView, QStyledItemDelegate, QStyle,
-                             QSizePolicy,)
+                             QSizePolicy, QFrame)
 
 from fuocore.models import ModelType
 
@@ -160,6 +160,8 @@ class CollectionTOCView(QListView):
         delegate = CollectionTOCDelegate(self)
         self.setItemDelegate(delegate)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        self.setFrameShape(QFrame.NoFrame)
 
         self.clicked.connect(self._on_clicked)
 
