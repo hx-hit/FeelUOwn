@@ -18,7 +18,7 @@ class MagicBox(QLineEdit):
         super().__init__(parent)
 
         self._app = app
-        self.setPlaceholderText('搜索歌曲、歌手、专辑、用户；执行 Python 代码')
+        self.setPlaceholderText('搜索歌曲、歌手、专辑、用户')
         self.setToolTip('直接输入文字可以进行过滤，按 Enter 可以搜索\n'
                         '输入 >>> 前缀之后，可以执行 Python 代码\n'
                         '输入 > 前缀可以执行 fuo 命令（未实现，欢迎 PR）')

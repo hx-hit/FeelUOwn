@@ -2,7 +2,7 @@ from PyQt5.QtCore import (QAbstractListModel, QModelIndex, Qt, QRect,
                           QPoint, QSize, pyqtSignal, QEvent)
 from PyQt5.QtGui import (QPainter, QPalette, QPen, QMouseEvent)
 from PyQt5.QtWidgets import (QListView, QStyledItemDelegate, QStyle, QSizePolicy,
-                             QApplication, QStyleOptionButton)
+                             QApplication, QStyleOptionButton, QFrame)
 
 
 class SongListModel(QAbstractListModel):
@@ -136,7 +136,10 @@ class SongListView(QListView):
         self.delegate = SongListDelegate(self)
         self.setItemDelegate(self.delegate)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setMouseTracking(True)
+        self.setFrameShape(QFrame.NoFrame)
         self.activated.connect(self._on_activated)
 
     def _on_activated(self, index):
