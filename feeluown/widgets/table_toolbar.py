@@ -75,7 +75,7 @@ class SongsTableToolbar(QWidget):
     def albums_mode(self):
         self.before_change_mode()
         self.play_all_btn.hide()
-        self.show_albums_btn.show()
+        # self.show_albums_btn.show()
         self.filter_albums_mini_btn.show()
         self.filter_albums_contributed_btn.show()
         self.filter_albums_all_btn.show()

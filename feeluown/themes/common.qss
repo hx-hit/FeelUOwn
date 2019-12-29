@@ -23,6 +23,10 @@ DescriptionContainer, DescriptionContainer QLabel {
     background-color: transparent;
 }
 
+MagicBox {
+    border-radius: 2px;
+}
+
 /*
  * buttons
  */

@@ -69,8 +69,19 @@ class Delegate:
                                parent=self.albums_table)
         filter_model.setSourceModel(model)
         self.albums_table.setModel(filter_model)
+        self.albums_table.show_album_needed.connect(self.show_model)
         self.albums_table.scrollToTop()
         self.meta_widget.toolbar.albums_mode()
+
+        # album list fitlers
+        self.meta_widget.toolbar.filter_albums_contributed_needed.connect(
+            self.filter_albums_contributed)
+        self.meta_widget.toolbar.filter_albums_mini_needed.connect(
+            self.filter_albums_mini)
+        self.meta_widget.toolbar.filter_albums_all_needed.connect(
+            self.filter_albums_all)
+        self.meta_widget.toolbar.filter_albums_live_needed.connect(
+            self.filter_albums_live)
 
     def show_songs(self, songs=None, songs_g=None, show_count=False):
         if show_count:
@@ -384,6 +395,11 @@ class TableContainer(QFrame):
         task = aio.create_task(self.set_delegate(delegate))
         task.add_done_callback(
             lambda _: delegate.show_songs(songs=songs, songs_g=songs_g))
+
+    def show_albums(self, albums_g):
+        delegate = Delegate()
+        task = aio.create_task(self.set_delegate(delegate))
+        task.add_done_callback(lambda _: delegate.show_albums(albums_g))
 
     def show_player_playlist(self):
         aio.create_task(self.set_delegate(PlayerPlaylistDelegate()))

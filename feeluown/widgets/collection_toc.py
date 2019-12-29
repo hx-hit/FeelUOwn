@@ -3,8 +3,8 @@ Table of contents view for one collection
 """
 
 from PyQt5.QtCore import (Qt, QAbstractListModel, QModelIndex, QSize,
-                          QRect, QPoint, pyqtSignal, QRectF)
-from PyQt5.QtGui import (QPainter, QPalette, QPen, QTextDocument)
+                          QRect, QPoint, pyqtSignal)
+from PyQt5.QtGui import (QPainter, QPalette, QPen)
 from PyQt5.QtWidgets import (QListView, QStyledItemDelegate, QStyle,
                              QSizePolicy, QFrame)
 

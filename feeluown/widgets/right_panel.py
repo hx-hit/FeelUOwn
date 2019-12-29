@@ -2,7 +2,9 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout
 
 from fuocore.models import ModelType
+from fuocore.reader import RandomSequentialReader
 
+from feeluown.collection import DEFAULT_COLL_ALBUMS
 from feeluown.widgets.table_container import TableContainer
 from feeluown.widgets.collection_container import CollectionContainer
 
@@ -44,6 +46,12 @@ class RightPanel(QFrame):
             if model.meta.model_type != ModelType.song:
                 pure_songs = False
                 break
+
+        if coll.name == DEFAULT_COLL_ALBUMS:
+            self.collection_container.hide()
+            reader = RandomSequentialReader.from_list(coll.models)
+            self.table_container.show_albums(reader)
+            return
 
         if pure_songs:
             self.collection_container.hide()
